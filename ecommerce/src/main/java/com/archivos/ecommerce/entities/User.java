@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,9 +18,9 @@ import lombok.NoArgsConstructor;
 
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "user_id")
-    private String userId;
+    @GeneratedValue
+    @Column(name = "user_id", updatable = false, nullable = false)
+    private UUID userId;
 
     @NotBlank
     @Column(name = "name", nullable = false)
