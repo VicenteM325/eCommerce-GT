@@ -1,13 +1,21 @@
 package com.archivos.ecommerce.services;
 
+import com.archivos.ecommerce.dtos.NewProductDto;
+import com.archivos.ecommerce.dtos.ProductDto;
+import com.archivos.ecommerce.entities.Category;
 import com.archivos.ecommerce.entities.Product;
+import com.archivos.ecommerce.entities.State;
+import com.archivos.ecommerce.repositories.CategoryRepository;
 import com.archivos.ecommerce.repositories.ProductRepository;
+import com.archivos.ecommerce.repositories.StateRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -15,40 +23,85 @@ import java.util.UUID;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final StateRepository stateRepository;
 
-    public List<Product> getAll() {
-        return productRepository.findAll();
+
+    public List<ProductDto> getAll() {
+        return productRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Product> getById(UUID id) {
-        return productRepository.findById(id);
-    }
-
-    public Product create(Product product) {
-        product.setProductId(UUID.randomUUID());
-        return productRepository.save(product);
-    }
-
-    public Product update(UUID id, Product productDetails) {
+    public ProductDto getById(UUID id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new RuntimeException("Producto no econtrado"));
+        return convertToDto(product);
+    }
 
-        product.setName(productDetails.getName());
-        product.setDescription(productDetails.getDescription());
-        product.setPicture(productDetails.getPicture());
-        product.setPrice(productDetails.getPrice());
-        product.setStock(productDetails.getStock());
-        product.setCategory(productDetails.getCategory());
-        product.setState(productDetails.getState());
+    //Metodo para crear producto desde DTO de entrada
+    public ProductDto create(NewProductDto dto) {
+        Category category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        State state = stateRepository.findById(dto.stateId())
+                .orElseThrow(() -> new RuntimeException("Estado no encontrado"));
 
-        return productRepository.save(product);
+        Product product = new Product();
+        product.setProductId(UUID.randomUUID());
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPicture(dto.picture());
+        product.setPrice(dto.price());
+        product.setStock(dto.stock());
+        product.setCategory(category);
+        product.setState(state);
+
+        Product saved = productRepository.save(product);
+        return convertToDto(saved);
+    }
+
+    public ProductDto update(UUID id, NewProductDto dto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        Category category = categoryRepository.findById(dto.categoryId())
+                        .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        State state = stateRepository.findById(dto.stateId())
+                        .orElseThrow(() -> new RuntimeException("Estado no encontrado"));
+
+        product.setName(dto.name());
+        product.setDescription(dto.description());
+        product.setPicture(dto.picture());
+        product.setPrice(dto.price());
+        product.setStock(dto.stock());
+        product.setCategory(category);
+        product.setState(state);
+
+        Product updated = productRepository.save(product);
+        return convertToDto(updated);
     }
 
     public void delete(UUID id) {
         productRepository.deleteById(id);
     }
 
-    public List<Product> findByCategory(Integer categoryId) {
-        return productRepository.findByCategoryCategoryId(categoryId);
+    //Metodo para buscar productos por categoria
+    public List<ProductDto> findByCategory(Integer categoryId) {
+        return productRepository.findByCategoryCategoryId(categoryId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    //Metodo conversor privado a DTO'S
+    private ProductDto convertToDto(Product product){
+        return new ProductDto(
+                product.getProductId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPicture(),
+                product.getPrice(),
+                product.getStock(),
+                product.getCategory() != null ? product.getCategory().getName() : null,
+                product.getState() != null ? product.getState().getName() : null
+        );
     }
 }

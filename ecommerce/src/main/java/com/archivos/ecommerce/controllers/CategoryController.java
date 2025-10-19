@@ -1,6 +1,7 @@
 package com.archivos.ecommerce.controllers;
 
-import com.archivos.ecommerce.entities.Category;
+import com.archivos.ecommerce.dtos.CategoryDto;
+import com.archivos.ecommerce.dtos.NewCategoryDto;
 import com.archivos.ecommerce.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,25 +17,23 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAll(){
+    public ResponseEntity<List<CategoryDto>> getAll(){
         return ResponseEntity.ok(categoryService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getById(@PathVariable Integer id){
-        return categoryService.getById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CategoryDto> getById(@PathVariable Integer id){
+        return ResponseEntity.ok(categoryService.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Category> create(@RequestBody Category category){
-        return ResponseEntity.status(201).body(categoryService.create(category));
+    public ResponseEntity<CategoryDto> create(@RequestBody NewCategoryDto dto){
+        return ResponseEntity.status(201).body(categoryService.create(dto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> update(@PathVariable Integer id, @RequestBody Category category){
-        return ResponseEntity.ok(categoryService.update(id, category));
+    public ResponseEntity<CategoryDto> update(@PathVariable Integer id, @RequestBody NewCategoryDto dto){
+        return ResponseEntity.ok(categoryService.update(id, dto));
     }
 
     @DeleteMapping("/{id}")

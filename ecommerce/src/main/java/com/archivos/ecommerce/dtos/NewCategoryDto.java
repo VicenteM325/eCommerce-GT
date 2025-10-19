@@ -1,7 +1,7 @@
 package com.archivos.ecommerce.dtos;
 
-public record StateDto(
-        Integer stateId,
+public record NewCategoryDto(
         String name,
         String description
 ){}
+

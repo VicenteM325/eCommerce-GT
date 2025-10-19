@@ -1,4 +1,7 @@
 package com.archivos.ecommerce.dtos;
 
-public class CategoryDto {
-}
+public record CategoryDto(
+        Integer categoryId,
+        String name,
+        String description
+) {}
