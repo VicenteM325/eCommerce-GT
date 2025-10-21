@@ -1,6 +1,7 @@
 package com.archivos.ecommerce.repositories;
 
 import com.archivos.ecommerce.entities.Cart;
+import com.archivos.ecommerce.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -9,4 +10,5 @@ import java.util.UUID;
 public interface CartRepository extends JpaRepository<Cart, UUID> {
 
     Optional<Cart> findByUser_UserId(UUID userId);
+
 }

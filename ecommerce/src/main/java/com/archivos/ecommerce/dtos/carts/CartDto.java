@@ -1,4 +1,4 @@
-package com.archivos.ecommerce.dtos;
+package com.archivos.ecommerce.dtos.carts;
 
 import java.math.BigDecimal;
 import java.util.Date;

@@ -1,7 +1,7 @@
 package com.archivos.ecommerce.controllers;
 
-import com.archivos.ecommerce.dtos.CartDto;
-import com.archivos.ecommerce.dtos.NewCartItemDto;
+import com.archivos.ecommerce.dtos.carts.CartDto;
+import com.archivos.ecommerce.dtos.carts.NewCartItemDto;
 import com.archivos.ecommerce.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

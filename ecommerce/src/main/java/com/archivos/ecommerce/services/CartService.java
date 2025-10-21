@@ -1,8 +1,8 @@
 package com.archivos.ecommerce.services;
 
-import com.archivos.ecommerce.dtos.CartDto;
-import com.archivos.ecommerce.dtos.CartItemDto;
-import com.archivos.ecommerce.dtos.NewCartItemDto;
+import com.archivos.ecommerce.dtos.carts.CartDto;
+import com.archivos.ecommerce.dtos.carts.CartItemDto;
+import com.archivos.ecommerce.dtos.carts.NewCartItemDto;
 import com.archivos.ecommerce.entities.Cart;
 import com.archivos.ecommerce.entities.CartItem;
 import com.archivos.ecommerce.entities.Product;

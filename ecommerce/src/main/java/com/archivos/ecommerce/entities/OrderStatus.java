@@ -16,6 +16,7 @@ public class OrderStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_status_id")
     private Integer orderStatusId;
 
     @Column(name = "status_name", nullable = false, unique = true)

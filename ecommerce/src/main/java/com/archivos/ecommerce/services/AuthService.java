@@ -1,5 +1,6 @@
 package com.archivos.ecommerce.services;
 
+import com.archivos.ecommerce.dtos.admin.AdminCreateUserDto;
 import com.archivos.ecommerce.dtos.NewUserDto;
 import com.archivos.ecommerce.entities.Role;
 import com.archivos.ecommerce.entities.User;
@@ -7,8 +8,6 @@ import com.archivos.ecommerce.enums.RoleList;
 import com.archivos.ecommerce.jwt.JwtUtil;
 import com.archivos.ecommerce.repositories.RoleRepository;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -46,6 +45,7 @@ public class AuthService {
         return user.getRole().getName().toString();
     }
 
+    //REGISTRO DE USUARIOS COMUNES
     public void registerUser(NewUserDto newUserDto){
         if(userService.existsByEmail(newUserDto.getEmailAddress())) {
             throw new IllegalArgumentException("Email existente");
@@ -62,6 +62,27 @@ public class AuthService {
         user.setDpi(Long.parseLong(String.valueOf(newUserDto.getDpi())));
         user.setUserStatus(newUserDto.getUserStatus());
         user.setRole(roleUser);
+
+        userService.save(user);
+    }
+
+    //REGISTRO POR USUARIO ADMIN
+    public void registerUserByAdmin(AdminCreateUserDto dto){
+        if(userService.existsByEmail(dto.getEmailAddress())) {
+            throw new IllegalArgumentException("Email ya registrado");
+        }
+
+        Role role = roleRepository.findByName(dto.getRole())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
+
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmailAddress(dto.getEmailAddress());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setAddress(dto.getAddress());
+        user.setDpi(dto.getDpi());
+        user.setUserStatus(dto.getUserStatus());
+        user.setRole(role);
 
         userService.save(user);
     }

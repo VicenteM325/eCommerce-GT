@@ -5,6 +5,7 @@ import com.archivos.ecommerce.dtos.NewCategoryDto;
 import com.archivos.ecommerce.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,16 +27,19 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getById(id));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @PostMapping
     public ResponseEntity<CategoryDto> create(@RequestBody NewCategoryDto dto){
         return ResponseEntity.status(201).body(categoryService.create(dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @PutMapping("/{id}")
     public ResponseEntity<CategoryDto> update(@PathVariable Integer id, @RequestBody NewCategoryDto dto){
         return ResponseEntity.ok(categoryService.update(id, dto));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id){
         categoryService.delete(id);

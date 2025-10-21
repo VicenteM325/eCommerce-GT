@@ -1,4 +1,4 @@
-package com.archivos.ecommerce.dtos;
+package com.archivos.ecommerce.dtos.carts;
 
 import java.util.UUID;
 
