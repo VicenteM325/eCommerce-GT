@@ -5,6 +5,7 @@ import com.archivos.ecommerce.dtos.tracking.TrackingResponseDto;
 import com.archivos.ecommerce.services.TrackingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -17,10 +18,12 @@ public class TrackingController {
     private final TrackingService trackingService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('COMMON', 'LOGISTICS')")
     public ResponseEntity<TrackingResponseDto> create(@RequestBody TrackingRequestDto dto){
         return ResponseEntity.ok(trackingService.createTracking(dto));
     }
 
+    @PreAuthorize("hasAnyRole('LOGISTICS')")
     @PutMapping("/{trackingId}/status/{status}")
     public ResponseEntity<TrackingResponseDto> updateStatus(
             @PathVariable UUID trackingId,

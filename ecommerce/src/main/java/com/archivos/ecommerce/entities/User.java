@@ -1,5 +1,6 @@
 package com.archivos.ecommerce.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +32,7 @@ public class User {
     @Column(name = "email_address", unique = true, nullable = false)
     private String emailAddress;
 
+    @JsonIgnore
     @NotBlank
     @Column(nullable = false)
     private String password;

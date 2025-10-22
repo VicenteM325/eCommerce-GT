@@ -1,0 +1,8 @@
+<form [formGroup]="registerForm" (ngSubmit)="register()">
+    <input type="text" formControlName="name" id="name" placeholder="Nombre" />
+    <input type="text" formControlName="emailAddress" id="emailAddress" placeholder="Correo Electronico" />
+    <input type="password" formControlName="password" placeholder="Contraseña" id="pass" />
+    <input type="text" formControlName="address" id="address" placeholder="Direccion" />
+    <input type="number" formControlName="dpi" id="dpi" placeholder=" Dpi" />
+    <button type="submit" [disabled]="registerForm.invalid">Registrarse</button>
+</form>
