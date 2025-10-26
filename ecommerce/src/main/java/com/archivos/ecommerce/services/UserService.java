@@ -55,6 +55,10 @@ public class UserService implements UserDetailsService {
         return userRepository.existsByEmailAddress(email);
     }
 
+    public boolean existsByDpi(Long dpi){
+        return userRepository.existsByDpi(dpi);
+    }
+
     public void save(User user){
         userRepository.save(user);
     }

@@ -8,6 +8,7 @@ import com.archivos.ecommerce.enums.RoleList;
 import com.archivos.ecommerce.jwt.JwtUtil;
 import com.archivos.ecommerce.repositories.RoleRepository;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -34,22 +35,36 @@ public class AuthService {
     }
 
     public String authenticate(String email, String password, HttpServletResponse response){
-        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
-        Authentication authResult = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authResult);
+        try {
+            Authentication authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+            Authentication authResult = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authResult);
 
-        String jwt = jwtUtil.generateToken(authResult);
-        cookieService.addHttpOnlyCookie("jwt", jwt, 7*24*60*60, response);
+            String jwt = jwtUtil.generateToken(authResult);
+            cookieService.addHttpOnlyCookie("jwt", jwt, 7 * 24 * 60 * 60, response);
 
-         User user = userService.findByEmailAddress(email);
-        return user.getRole().getName().toString();
+            User user = userService.findByEmailAddress(email);
+            return user.getRole().getName().toString();
+        } catch (BadCredentialsException e){
+            throw new IllegalArgumentException("Credenciales Incorrectas");
+        }
     }
+
+    public void logout(HttpServletResponse response) {
+        cookieService.deleteCookie("jwt", response);
+        SecurityContextHolder.clearContext();
+    }
+
 
     //REGISTRO DE USUARIOS COMUNES
     public void registerUser(NewUserDto newUserDto){
         if(userService.existsByEmail(newUserDto.getEmailAddress())) {
             throw new IllegalArgumentException("Email existente");
         }
+        if(userService.existsByDpi(newUserDto.getDpi())) {
+            throw new IllegalArgumentException("DPI existente");
+        }
+
 
         Role roleUser = roleRepository.findByName(RoleList.ROLE_COMMON)
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
@@ -60,7 +75,7 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(newUserDto.getPassword()));
         user.setAddress(newUserDto.getAddress());
         user.setDpi(Long.parseLong(String.valueOf(newUserDto.getDpi())));
-        user.setUserStatus(newUserDto.getUserStatus());
+        user.setUserStatus("ACTIVO");
         user.setRole(roleUser);
 
         userService.save(user);

@@ -1,0 +1,35 @@
+<div class="card">
+  <div class="card-header">
+    <h4>Usuarios</h4>
+  </div>
+  <div class="card-body">
+    <div *ngIf="loading">Cargando usuarios...</div>
+    <div *ngIf="error">{{ error }}</div>
+    <table *ngIf="!loading && users.length" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>DPI</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.name }}</td>
+          <td>{{ user.emailAddress }}</td>
+          <td>{{ user.dpi }}</td>
+          <td>{{ user.role?.name }}</td>
+          <td>{{ user.userStatus }}</td>
+          <td>
+            <button class="btn btn-sm btn-danger" (click)="deleteUser(user.userId!)">
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
