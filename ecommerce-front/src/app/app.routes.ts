@@ -45,6 +45,14 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { expectedRole: ['ROLE_COMMON'] }
       },
+      {
+        path: 'cart',
+        loadComponent: () => import('./views/pages/common/cart/cart.component').then(m => m.CartComponent), canActivate:[roleGuard], data: { expectedRole: ['ROLE_COMMON'] }
+      },
+      {
+        path: 'order',
+        loadComponent: () => import('./views/pages/common/order/order.component').then(m => m.OrdersComponent), canActivate:[roleGuard], data: { expectedRole: ['ROLE_COMMON'] }
+      },
       // Lazy loading de módulos CoreUI
       { path: 'theme', loadChildren: () => import('./views/theme/routes').then(m => m.routes) },
       { path: 'base', loadChildren: () => import('./views/base/routes').then(m => m.routes) },

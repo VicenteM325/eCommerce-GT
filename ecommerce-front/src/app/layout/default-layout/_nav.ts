@@ -31,9 +31,27 @@ export function getNavItems(role: string | undefined): INavData[] {
           name: 'Eliminar',
           url: '/products/delete',
           iconComponent: { name: 'cil-trash' }
-        }
+        },
       ]
     },
+    {
+      title: true,
+      name: 'Carrito y Órdenes'
+    },
+    {
+      name: 'Carrito',
+      url: '/cart',
+      iconComponent: { name: 'cil-cart' },
+      badge: { color: 'info', text: 'NEW' }
+    },
+    {
+      name: 'Órdenes',
+      url: '/order',
+      iconComponent: { name: 'cil-list' },
+      badge: { color: 'success', text: 'NEW' }
+    },
+
+
     {
       title: true,
       name: 'Theme'
@@ -149,7 +167,7 @@ export function getNavItems(role: string | undefined): INavData[] {
 
   switch (role) {
     case 'ROLE_ADMIN':
-      return [ ...adminItems];
+      return [...adminItems];
     case 'ROLE_COMMON':
       return [...commonItems, ...commonUserItems];
     case 'ROLE_LOGISTICS':
@@ -157,6 +175,6 @@ export function getNavItems(role: string | undefined): INavData[] {
     case 'ROLE_MODERATOR':
       return [...moderatorUserItems];
     default:
-      return commonItems; 
+      return commonItems;
   }
 }
