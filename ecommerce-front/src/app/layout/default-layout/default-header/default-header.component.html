@@ -7,10 +7,15 @@
     </button>
     <c-header-nav class="d-none d-md-flex">
       <c-nav-item>
-        <a cNavLink routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a cNavLink [routerLink]="dashboardLink$ | async" routerLinkActive="active">
+          Dashboard
+        </a>
       </c-nav-item>
       <c-nav-item>
         <a cNavLink routerLink="/users" routerLinkActive="active">Users</a>
+      </c-nav-item>
+      <c-nav-item>
+        <a cNavLink routerLink="/profile" routerLinkActive="active">Profile</a>
       </c-nav-item>
       <c-nav-item>
         <a cNavLink routerLink="/settings" routerLinkActive="active">Settings</a>
@@ -99,7 +104,7 @@
       </li>
       <li></li>
       <li>
-        <a cDropdownItem routerLink="">
+        <a cDropdownItem routerLink="/profile">
           <svg cIcon class="me-2" name="cilUser"></svg>
           Profile
         </a>

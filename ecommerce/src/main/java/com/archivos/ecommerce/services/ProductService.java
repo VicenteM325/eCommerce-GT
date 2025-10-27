@@ -2,12 +2,9 @@ package com.archivos.ecommerce.services;
 
 import com.archivos.ecommerce.dtos.NewProductDto;
 import com.archivos.ecommerce.dtos.ProductDto;
-import com.archivos.ecommerce.entities.Category;
-import com.archivos.ecommerce.entities.Product;
-import com.archivos.ecommerce.entities.State;
-import com.archivos.ecommerce.repositories.CategoryRepository;
-import com.archivos.ecommerce.repositories.ProductRepository;
-import com.archivos.ecommerce.repositories.StateRepository;
+import com.archivos.ecommerce.entities.*;
+import com.archivos.ecommerce.enums.PublicationState;
+import com.archivos.ecommerce.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +22,9 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final StateRepository stateRepository;
+    private final AuthService authService;
+    private final UserProductRepository userProductRepository;
+    private final UserRepository userRepository;
 
 
     public List<ProductDto> getAll() {
@@ -38,6 +38,14 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Producto no econtrado"));
         return convertToDto(product);
     }
+    //FILTRAR PRODUCTOS APROBADOS
+    public List<ProductDto> getApprovedProducts() {
+        return userProductRepository.findByState(PublicationState.ACEPTADO).stream()
+                .map(UserProduct::getProductId)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
 
     //Metodo para crear producto desde DTO de entrada
     public ProductDto create(NewProductDto dto) {
@@ -57,6 +65,19 @@ public class ProductService {
         product.setState(state);
 
         Product saved = productRepository.save(product);
+
+        User springUser = authService.getCurrentUser();
+        String email = springUser.getEmailAddress();
+        User currentUser = userRepository.findByEmailAddress(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        UserProduct userProduct = new UserProduct();
+        userProduct.setUserId(currentUser);
+        userProduct.setProductId(saved);
+        userProduct.setState(PublicationState.PENDIENTE);
+
+        userProductRepository.save(userProduct);
+
         return convertToDto(saved);
     }
 
@@ -104,4 +125,5 @@ public class ProductService {
                 product.getState() != null ? product.getState().getName() : null
         );
     }
+
 }

@@ -69,6 +69,8 @@ public class UserService implements UserDetailsService {
         return findByEmailAddress(email);
     }
 
+
+
     //Admin
     public List<User> getAllUsers() {
         return userRepository.findAll();

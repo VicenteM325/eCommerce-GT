@@ -13,10 +13,12 @@ import {
 import { DropdownModule, SidebarModule } from '@coreui/angular';
 import { IconSetService } from '@coreui/icons-angular';
 import { routes } from './app.routes';
+import { appInitializerProvider } from '../app/helpers/services/app-initializer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(),
+    appInitializerProvider,
     provideRouter(routes,
       withRouterConfig({
         onSameUrlNavigation: 'reload'

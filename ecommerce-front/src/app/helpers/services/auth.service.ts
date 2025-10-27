@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, APP_INITIALIZER } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { LoginUser } from '../models/login-user';
 import { HttpClient } from '@angular/common/http';
@@ -7,6 +7,8 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { User } from '../models/user';
 import { catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -62,17 +64,10 @@ export class AuthService {
   }
 
   restoreSession(): Observable<User | null> {
-    const storedUser = this.getStoredUser();
-    return this.getDetails().pipe(
-      tap(user => {
-        if (user) {
-          this.currentUserSubject.next(user);
-          localStorage.setItem('user', JSON.stringify(user));
-        }
-      }),
-      catchError(() => of(null))
-    );
-  }
+  return this.getDetails().pipe(
+    catchError(() => of(null))
+  );
+}
 
 
   logout(): Observable<void> {

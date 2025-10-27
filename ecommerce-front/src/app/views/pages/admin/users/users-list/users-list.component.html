@@ -1,35 +1,42 @@
-<div class="card">
-  <div class="card-header">
-    <h4>Usuarios</h4>
-  </div>
-  <div class="card-body">
-    <div *ngIf="loading">Cargando usuarios...</div>
-    <div *ngIf="error">{{ error }}</div>
-    <table *ngIf="!loading && users.length" class="table table-striped">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>DPI</th>
-          <th>Rol</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users">
-          <td>{{ user.name }}</td>
-          <td>{{ user.emailAddress }}</td>
-          <td>{{ user.dpi }}</td>
-          <td>{{ user.role?.name }}</td>
-          <td>{{ user.userStatus }}</td>
-          <td>
-            <button class="btn btn-sm btn-danger" (click)="deleteUser(user.userId!)">
-              Eliminar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div *ngIf="!showForm">
+  <h2>Gestión de Usuarios</h2>
+
+  <button (click)="newUser()" class="btn btn-success mb-3">+ Crear usuario</button>
+
+  <table *ngIf="!loading" class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Dirección</th>
+        <th>DPI</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>{{ user.name }}</td>
+        <td>{{ user.emailAddress }}</td>
+        <td>{{ user.role?.name }}</td>
+        <td>{{ user.address }}</td>
+        <td>{{ user.dpi }}</td>
+        <td>
+          <button (click)="editUser(user)" class="btn btn-primary btn-sm">Editar</button>
+          <button (click)="deleteUser(user.userId!)" class="btn btn-danger btn-sm">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="loading">Cargando usuarios...</p>
+  <p *ngIf="error">{{ error }}</p>
+</div>
+
+<div *ngIf="showForm">
+  <app-user-form
+    [user]="selectedUser"
+    (formSaved)="reloadAfterSave()"
+    (formCancelled)="closeForm()"
+  ></app-user-form>
 </div>

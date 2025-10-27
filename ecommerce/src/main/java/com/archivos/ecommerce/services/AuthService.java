@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final CookieService cookieService;
+
 
     public AuthService(UserService userService, RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManagerBuilder authenticationManagerBuilder, CookieService cookieService) {
         this.userService = userService;
@@ -86,6 +88,9 @@ public class AuthService {
         if(userService.existsByEmail(dto.getEmailAddress())) {
             throw new IllegalArgumentException("Email ya registrado");
         }
+        if(userService.existsByDpi(dto.getDpi())) {
+            throw new IllegalArgumentException("DPI existente");
+        }
 
         Role role = roleRepository.findByName(dto.getRole())
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado"));
@@ -100,5 +105,25 @@ public class AuthService {
         user.setRole(role);
 
         userService.save(user);
+    }
+
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+            return null;
+        }
+
+        Object principal = auth.getPrincipal();
+        String email;
+
+        if (principal instanceof UserDetails springUser) {
+            email = springUser.getUsername();
+        } else if (principal instanceof String) {
+            email = (String) principal;
+        } else {
+            throw new RuntimeException("Tipo de principal desconocido: " + principal.getClass());
+        }
+
+        return userService.findByEmailAddress(email);
     }
 }

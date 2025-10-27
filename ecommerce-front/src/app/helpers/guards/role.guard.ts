@@ -14,21 +14,27 @@ export const roleGuard: CanActivateFn = async (route, state) => {
     if (!user) {
       const restoredUser = await firstValueFrom(authService.getDetails());
       if (!restoredUser) {
-        router.navigate(['/login']);
+        await router.navigate(['/login']);
         return false;
       }
       user = restoredUser;
     }
 
-    if (user.role?.name === expectedRole) {
+    const userRole = user.role?.name;
+
+    const hasAccess = Array.isArray(expectedRole)
+      ? expectedRole.includes(userRole)
+      : userRole === expectedRole;
+
+    if (hasAccess) {
       return true;
     } else {
-      router.navigate(['/404']);
+      await router.navigate(['/404']);
       return false;
     }
+
   } catch (error) {
-    router.navigate(['/login']);
+    await router.navigate(['/login']);
     return false;
   }
-  
 };

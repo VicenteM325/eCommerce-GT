@@ -5,6 +5,7 @@ import com.archivos.ecommerce.dtos.ProductDto;
 import com.archivos.ecommerce.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class ProductController {
 
     private final ProductService productService;
 
+    @PreAuthorize("hasAnyRole('MODERATOR')")
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAll(){
         return ResponseEntity.ok(productService.getAll());
@@ -40,6 +42,11 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> update(@PathVariable UUID id, @RequestBody NewProductDto dto){
         return ResponseEntity.ok(productService.update(id, dto));
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<List<ProductDto>> getApproved() {
+        return ResponseEntity.ok(productService.getApprovedProducts());
     }
 
     @DeleteMapping("/{id}")

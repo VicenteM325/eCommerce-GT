@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class AdminCreateUserDto {
 
-    @NotBlank
+    @NotBlank(message = "El nombre no puede estar vacío")
     private String name;
 
     @NotBlank

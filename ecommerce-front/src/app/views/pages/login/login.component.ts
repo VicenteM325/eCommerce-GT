@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { switchMap } from 'rxjs/operators';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgStyle } from '@angular/common';
@@ -57,49 +58,33 @@ export class LoginComponent {
   });
 
   login(): void {
-    if (this.loginForm.invalid) return;
-    this.loading = true;
+  if (this.loginForm.invalid) return;
+  this.loading = true;
 
-    const credentials: LoginUser = this.loginForm.value as LoginUser;
+  const credentials: LoginUser = this.loginForm.value as LoginUser;
 
-    this.authService.login(credentials).subscribe({
-      next: () => {
-        this.authService.getDetails().subscribe({
-          next: (user) => {
-            this.loading = false;
-            console.log('Usuario completo:', user);
+  this.authService.login(credentials).pipe(
+    switchMap(() => this.authService.getDetails())
+  ).subscribe({
+    next: (user) => {
+      this.loading = false;
+      console.log('Usuario completo:', user);
 
-            const roleName = user.role?.name || '';
-
-            switch (roleName) {
-              case 'ROLE_ADMIN':
-                this.router.navigateByUrl('/admin/dashboard');
-                break;
-              case 'ROLE_COMMON':
-                this.router.navigateByUrl('/common/dashboard');
-                break;
-              case 'ROLE_LOGISTICS':
-                this.router.navigateByUrl('/logistics/dashboard');
-                break;
-              case 'ROLE_MODERATOR':
-                this.router.navigateByUrl('/moderator/dashboard');
-                break;
-              default:
-                this.router.navigateByUrl('/login');
-                break;
-            }
-          },
-          error: (err) => {
-            console.error('Error al obtener detalles del usuario', err);
-            this.loading = false;
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error al iniciar sesión:', err);
-        this.loading = false;
-        this.errorMessage = err?.error?.message || 'Credenciales incorrectas';
+      const roleName = user.role?.name || '';
+      switch (roleName) {
+        case 'ROLE_ADMIN': this.router.navigateByUrl('/admin/dashboard'); break;
+        case 'ROLE_COMMON': this.router.navigateByUrl('/common/dashboard'); break;
+        case 'ROLE_LOGISTICS': this.router.navigateByUrl('/logistics/dashboard'); break;
+        case 'ROLE_MODERATOR': this.router.navigateByUrl('/moderator/dashboard'); break;
+        default: this.router.navigateByUrl('/login'); break;
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Error al iniciar sesión o obtener usuario:', err);
+      this.loading = false;
+      this.errorMessage = err?.error?.message || 'Credenciales incorrectas';
+    }
+  });
+}
+
 }

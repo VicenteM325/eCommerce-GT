@@ -1,8 +1,10 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet, AsyncPipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../helpers/services/auth.service';
+import { map, tap } from 'rxjs/operators';
+import { User } from '../../../helpers/models/user';
 
 import {
   AvatarComponent,
@@ -29,7 +31,7 @@ import { IconDirective } from '@coreui/icons-angular';
 @Component({
   selector: 'app-default-header',
   templateUrl: './default-header.component.html',
-  imports: [ContainerComponent, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective]
+  imports: [ContainerComponent, AsyncPipe, HeaderTogglerDirective, SidebarToggleDirective, IconDirective, HeaderNavComponent, NavItemComponent, NavLinkDirective, RouterLink, RouterLinkActive, NgTemplateOutlet, BreadcrumbRouterComponent, DropdownComponent, DropdownToggleDirective, AvatarComponent, DropdownMenuDirective, DropdownHeaderDirective, DropdownItemDirective, BadgeComponent, DropdownDividerDirective]
 })
 export class DefaultHeaderComponent extends HeaderComponent {
 
@@ -38,6 +40,20 @@ export class DefaultHeaderComponent extends HeaderComponent {
 
   currentUser = this.authService.currentUser$;
 
+  dashboardLink$ = this.authService.currentUser$.pipe(
+    tap(user => console.log('[Header] Current user:', user)),
+    // Mapear el rol a la ruta
+    map(user => {
+      if (!user) return '/login';
+      switch (user.role?.name) {
+        case 'ROLE_ADMIN': return '/admin/dashboard';
+        case 'ROLE_COMMON': return '/common/dashboard';
+        case 'ROLE_LOGISTICS': return '/logistics/dashboard';
+        case 'ROLE_MODERATOR': return '/moderator/dashboard';
+        default: return '/login';
+      }
+    })
+  );
   logout(): void {
     this.authService.logout().subscribe({
       next: () => {
