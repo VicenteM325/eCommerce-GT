@@ -1,0 +1,8 @@
+{
+  "/auth": {
+    "target": "https://unconquerably-bistred-araceli.ngrok-free.dev",
+    "secure": false,
+    "changeOrigin": true,
+    "withCredentials": true
+  }
+}
